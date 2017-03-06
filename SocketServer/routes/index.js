@@ -5,6 +5,7 @@ module.exports = function (io) {
   /* GET home page. */
     router.get('/:id([a-zA-Z0-9_.-]{64})', function(req, res, next) {
         room = req.params.id;
+        res.send('Chat Server.');
         io.on('connection', function(socket){
             console.log('A user connected');
 
