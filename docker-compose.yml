@@ -15,9 +15,12 @@ services:
    - "8001:8000"
   depends_on:
    - db
- #chat:
-  #build: SocketServer/
-  #command: node server
-  #volumes:
-  # - ./SocketServer:/usr/src/app
-  #ports:
+ chat:
+  build: SocketServer/
+  command: node server
+  volumes:
+   - ./SocketServer:/usr/src/app
+  ports:
+   - "8002:3000"
+  depends_on:
+   - backend
