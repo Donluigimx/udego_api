@@ -74,7 +74,7 @@ class UserTestCase(APITestCase):
         response = self.client.get('/api/routes/filter/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        response = self.client.get('/api/routes/{0}/active/'.format(route.id), HTTP_AUTHORIZATION=auth)
+        response = self.client.get('/api/routes/{0}/activate/'.format(route.id), HTTP_AUTHORIZATION=auth)
         route = Route.objects.get(pk=route.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(route.is_active, True)
@@ -83,7 +83,7 @@ class UserTestCase(APITestCase):
         response = self.client.delete('/api/routes/{0}/'.format(route.id), HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
-        response = self.client.get('/api/routes/{0}/finish/'.format(route.id), HTTP_AUTHORIZATION=auth)
+        response = self.client.get('/api/routes/{0}/finalize/'.format(route.id), HTTP_AUTHORIZATION=auth)
         route = Route.objects.get(pk=route.id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(route.chat_room, None)

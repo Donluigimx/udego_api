@@ -52,7 +52,7 @@ class RouteViewSet(viewsets.ViewSet):
         )
 
     @detail_route(['GET'])
-    def active(self, request, pk=None):
+    def activate(self, request, pk=None):
         try:
             route = Route.objects.get(pk=pk, car__owner=request.user.profile)
             if not route.is_active:
@@ -70,7 +70,7 @@ class RouteViewSet(viewsets.ViewSet):
             return Response({'error': 'Route does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
     @detail_route(['GET'])
-    def finish(self, request, pk=None):
+    def finalize(self, request, pk=None):
         try:
             route = Route.objects.get(pk=pk, car__owner=request.user.profile)
             if route.is_active:
