@@ -25,7 +25,7 @@ SECRET_KEY = 'i3f8((!7&n&fvf*jw^bx1$y5!6e0a81bv_608tn^gg=6t1s*n9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'rides.test.udeg.cf']
 
 
 # Application definition
