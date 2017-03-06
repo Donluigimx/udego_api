@@ -1,0 +1,17 @@
+version: '2'
+services:
+ db:
+  image: postgres
+  environment:
+    - POSTGRES_PASSWORD=vF2OMsJF3kJKK9r
+    - POSTGRES_USER=udegrides
+    - POSTGRES_DB=udegrides
+ backend:
+  build: DjangoServer/
+  command: python manage.py runserver 0.0.0.0:8000
+  volumes:
+   - ./DjangoServer:/code
+  ports:
+   - "8001:8000"
+  depends_on:
+   - db

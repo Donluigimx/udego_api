@@ -1,0 +1,11 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to #{title}
+    script(type='text/javascript').
+        var socket = io.connect();
+        socket.on('connect', function () {
+            socket.emit('room', '0saA_1.-_asdw-ojisdk');
+        });
+        socket.on('message', function(data){document.write(data)});

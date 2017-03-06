@@ -1,0 +1,12 @@
+Django==1.10.3
+djangorestframework==3.5.2
+django-oauth-toolkit==0.11.0
+django-cors-middleware
+oauthlib==1.1.2
+psycopg2==2.6.2
+Pillow
+pytz
+django-ipware==1.1.6
+django-rest-framework-social-oauth2==1.0.5
+django-cors-headers==1.3.1
+requests==2.12.4
