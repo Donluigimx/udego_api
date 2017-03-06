@@ -116,7 +116,6 @@ class UserTestCase(APITestCase):
         self.assertEqual(response.data['owner'], self.user.id)
 
         response = self.client.delete('/api/cars/{0}/'.format(response.data['id']), HTTP_AUTHORIZATION=auth)
-        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(Car.objects.filter(owner=self.profile)), 1)
 

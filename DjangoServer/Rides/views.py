@@ -121,7 +121,7 @@ class CarViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         try:
-            car = Car.objects.get(pk=None, owner=request.user.profile)
+            car = Car.objects.get(pk=pk, owner=request.user.profile)
             if all([not route.is_active for route in car.routes.all()]):
                 car.delete()
                 return Response({'ok': 'Car deleted successfully.'}, status=status.HTTP_200_OK)
