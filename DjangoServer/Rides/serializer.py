@@ -76,25 +76,33 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = '__all__'
         read_only_fields = ('user', 'name', 'type', 'university', 'photo',)
+        extra_kwargs = {
+            'code': {
+                'required': False,
+            },
+        }
 
     def validate(self, attrs):
-        try:
-            Profile.objects.get(code=attrs['code'])
-            raise serializers.ValidationError({'error': 'User with code {0} already exists.'.format(attrs['code'])})
-        except Profile.DoesNotExist:
-            r = udeg_valida(**attrs)
-            if r == '0':
-                raise serializers.ValidationError({'error': 'UdeG code or nip wrong'})
-            data = r.split(',')
-            attrs['name'] = data[2]
-            attrs['type'] = data[0]
-            attrs['university'] = data[3]
+        if 'new_user' in self.context:
+            if not self.context['new_user']:
+                raise serializers.ValidationError({'error': 'Luigi has autism.'})
+            if not all(data in attrs for data in ('nip', 'password', 'code')):
+                raise serializers.ValidationError({'error': 'Nip, password and code required to create user'})
+            try:
+                Profile.objects.get(code=attrs['code'])
+                raise serializers.ValidationError({'error': 'User with code {0} already exists.'.format(attrs['code'])})
+            except Profile.DoesNotExist:
+                r = udeg_valida(**attrs)
+                if r == '0':
+                    raise serializers.ValidationError({'error': 'UdeG code or nip wrong'})
+                data = r.split(',')
+                attrs['name'] = data[2]
+                attrs['type'] = data[0]
+                attrs['university'] = data[3]
 
-            return attrs
+                return attrs
 
     def create(self, validated_data):
-        if not all(data in validated_data for data in ('nip', 'password')):
-            raise serializers.ValidationError({'error': 'Nip and password required to create user'})
         profile = Profile(
             name=validated_data['name'],
             phone_number=validated_data['phone_number'],
@@ -120,4 +128,5 @@ class ProfileSerializer(serializers.ModelSerializer):
         if 'photo_data' in validated_data:
             content, name = from_b64(validated_data['photo_data'])
             instance.photo.save(name=name, content=content)
+
         return instance

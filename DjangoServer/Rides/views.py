@@ -134,7 +134,7 @@ class CarViewSet(viewsets.ViewSet):
 @api_view(['POST'])
 @parser_classes((JSONParser,))
 def udg_signup(request):
-    profile_serializer = ProfileSerializer(data=request.data)
+    profile_serializer = ProfileSerializer(data=request.data, context={'new_user': True})
     if profile_serializer.is_valid(raise_exception=settings.DEBUG):
         profile_serializer.save()
         return Response(profile_serializer.data, status=status.HTTP_201_CREATED)
