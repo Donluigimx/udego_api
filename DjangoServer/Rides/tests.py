@@ -98,7 +98,7 @@ class UserTestCase(APITestCase):
         self.access_token.user = user
         self.access_token.save()
 
-        response = self.client.get('/api/routes/{0}/assign/'.format(route.id), HTTP_AUTHORIZATION=auth)
+        response = self.client.get('/api/routes/{0}/join/'.format(route.id), HTTP_AUTHORIZATION=auth)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(3, route.available_seats)

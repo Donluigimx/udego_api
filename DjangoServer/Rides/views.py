@@ -84,7 +84,7 @@ class RouteViewSet(viewsets.ViewSet):
             return Response({'error': 'Route does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
     @detail_route(['GET'])
-    def assign(self, request, pk=None):
+    def join(self, request, pk=None):
         try:
             route = Route.objects.get(pk=pk, is_active=True, car__owner__type=request.user.profile.type)
             if route.available_seats != 0:
