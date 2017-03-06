@@ -94,3 +94,6 @@ ENV/
 
 # PyCharm
 .idea/
+
+# Migrations
+migrations/
