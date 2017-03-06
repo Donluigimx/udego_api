@@ -17,7 +17,7 @@ services:
    - db
  chat:
   build: SocketServer/
-  command: node ./bin/www
+  command: nodemon start
   volumes:
    - ./SocketServer:/usr/src/app
   ports:
