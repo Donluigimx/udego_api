@@ -3,8 +3,7 @@ module.exports = function (io) {
     var router = express.Router();
 
   /* GET home page. */
-    router.get('/:id([a-zA-Z0-9_.-]{20})', function(req, res, next) {
-        res.render('index', { title: 'Express' });
+    router.get('/:id([a-zA-Z0-9_.-]{64})', function(req, res, next) {
         room = req.params.id;
         io.on('connection', function(socket){
             console.log('A user connected');
