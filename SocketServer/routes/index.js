@@ -2,8 +2,11 @@ module.exports = function (io) {
     var express = require('express');
     var router = express.Router();
 
+    router.get('/', function (req, res, next) {
+        res.redirect(301, 'http://udg.mx');
+    });
   /* GET home page. */
-    router.get('/:id([a-zA-Z0-9_.-]{64})', function(req, res, next) {
+    router.get('/:id([a-zA-Z0-9_.-]{36})', function(req, res, next) {
         room = req.params.id;
         res.send('Chat Server.');
         io.on('connection', function(socket){
