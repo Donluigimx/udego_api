@@ -93,7 +93,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             return attrs
 
     def create(self, validated_data):
-        if not all(data in validated_data for data in ('nip', 'password') ):
+        if not all(data in validated_data for data in ('nip', 'password')):
             raise serializers.ValidationError({'error': 'Nip and password required to create user'})
         profile = Profile(
             name=validated_data['name'],
@@ -116,6 +116,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.email = validated_data['email']
+        instance.phone_number = validated_data['phone_number']
         if 'photo_data' in validated_data:
             content, name = from_b64(validated_data['photo_data'])
             instance.photo.save(name=name, content=content)
