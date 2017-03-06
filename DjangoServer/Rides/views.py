@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, api_view, parser_classes, detail_route
@@ -22,7 +23,7 @@ class RouteViewSet(viewsets.ViewSet):
 
     def create(self, request):
         route_serializer = RouteSerializer(data=request.data)
-        if route_serializer.is_valid(raise_exception=True):
+        if route_serializer.is_valid(raise_exception=settings.DEBUG):
             route_serializer.save()
             return Response(route_serializer.data, status=status.HTTP_201_CREATED)
         return Response({'error': 'Wrong data'}, status=status.HTTP_400_BAD_REQUEST)
@@ -104,7 +105,7 @@ class CarViewSet(viewsets.ViewSet):
 
     def create(self, request):
         car_serializer = CarSerializer(data=request.data, context={'owner': request.user.profile})
-        if car_serializer.is_valid(raise_exception=True):
+        if car_serializer.is_valid(raise_exception=settings.DEBUG):
             car_serializer.save()
             return Response(car_serializer.data, status=status.HTTP_201_CREATED)
         return Response({'error': 'Wrong data.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -134,7 +135,7 @@ class CarViewSet(viewsets.ViewSet):
 @parser_classes((JSONParser,))
 def udg_signup(request):
     profile_serializer = ProfileSerializer(data=request.data)
-    if profile_serializer.is_valid(raise_exception=True):
+    if profile_serializer.is_valid(raise_exception=settings.DEBUG):
         profile_serializer.save()
         return Response(profile_serializer.data, status=status.HTTP_201_CREATED)
     return Response({'error': 'Wrong data'}, status=status.HTTP_400_BAD_REQUEST)
@@ -154,7 +155,7 @@ class ProfileViewSet(viewsets.ViewSet):
 
     def update(self, request, pk=None):
         profile_serializer = ProfileSerializer(data=request.data, instance=Profile.objects.get(pk=pk))
-        if profile_serializer.is_valid(raise_exception=True):
+        if profile_serializer.is_valid(raise_exception=settings.DEBUG):
             profile_serializer.save()
             return Response(profile_serializer.data, status=status.HTTP_200_OK)
         return Response({'error': 'Wrong data.'}, status=status.HTTP_400_BAD_REQUEST)
