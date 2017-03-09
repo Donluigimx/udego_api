@@ -16,8 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from Rides.views import UdeGTokenView
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/', include('Rides.urls')),
+    url(r'^udeg_login/$', UdeGTokenView.as_view()),
 ]

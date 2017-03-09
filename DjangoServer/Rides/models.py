@@ -5,8 +5,8 @@ from django.db import models
 class Profile(models.Model):
     user = models.OneToOneField(User)
     name = models.CharField(max_length=64)
-    phone_number = models.CharField(max_length=16)
-    email = models.EmailField()
+    phone_number = models.CharField(max_length=16, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
     code = models.CharField(max_length=10, unique=True)
     type = models.CharField(max_length=1)
     university = models.CharField(max_length=10)

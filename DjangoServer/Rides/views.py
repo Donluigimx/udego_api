@@ -1,15 +1,23 @@
 import uuid
 
+from braces.views import CsrfExemptMixin
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+from oauth2_provider.settings import oauth2_settings
+from oauth2_provider.views.mixins import OAuthLibMixin
+from rest_framework import permissions
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, api_view, parser_classes, detail_route
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from Rides.models import Route, Profile, Car
 from Rides.serializer import RouteSerializer, CarSerializer, ProfileSerializer
+from Rides.utils import udeg_valida
 
 
 class RouteViewSet(viewsets.ViewSet):
@@ -159,3 +167,42 @@ class ProfileViewSet(viewsets.ViewSet):
             profile_serializer.save()
             return Response(profile_serializer.data, status=status.HTTP_200_OK)
         return Response({'error': 'Wrong data.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UdeGTokenView(APIView, CsrfExemptMixin, OAuthLibMixin):
+
+    permission_classes = (permissions.AllowAny,)
+    server_class = oauth2_settings.OAUTH2_SERVER_CLASS
+    validator_class = oauth2_settings.OAUTH2_VALIDATOR_CLASS
+    oauthlib_backend_class = oauth2_settings.OAUTH2_BACKEND_CLASS
+
+    def post(self, request):
+        username = request.POST.get('username')
+        nip = request.POST.get('password')
+
+        r = udeg_valida(code=username, nip=nip)
+        if r == '0':
+            return Response({'error': 'Wrong Username'})
+        try:
+            user = User.objects.get(username=username)
+            user.set_password(nip)
+            user.save()
+        except User.DoesNotExist:
+            user = User.objects.create(username=username)
+            user.set_password(nip)
+            user.save()
+            print(r, r.split(','))
+            data = r.split(',')
+            Profile.objects.create(
+                user=user,
+                name=data[2],
+                code=username,
+                type=data[0],
+                university=data[3],
+            )
+        url, headers, body, status = self.create_token_response(request)
+        response = HttpResponse(content=body, status=status)
+
+        for k, v in headers.items():
+            response[k] = v
+        return response
