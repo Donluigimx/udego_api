@@ -26,7 +26,7 @@ class RouteViewSet(viewsets.ViewSet):
 
     def list(self, request):
         return Response(
-            RouteSerializer(instance=Route.objects.filter(car__owner=request.user.profile), many=True)
+            RouteSerializer(instance=Route.objects.filter(car__owner=request.user.profile), many=True).data
         )
 
     def create(self, request):
