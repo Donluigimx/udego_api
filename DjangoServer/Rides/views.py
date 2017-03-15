@@ -38,7 +38,7 @@ class RouteViewSet(viewsets.ViewSet):
             return Response({'error': 'Route does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
     def create(self, request):
-        route_serializer = RouteSerializer(data=request.data)
+        route_serializer = RouteSerializer(data=request.data, context={'user': request.user})
         if route_serializer.is_valid(raise_exception=settings.DEBUG):
             route_serializer.save()
             return Response(route_serializer.data, status=status.HTTP_201_CREATED)
@@ -208,7 +208,6 @@ class UdeGTokenView(APIView, CsrfExemptMixin, OAuthLibMixin):
             user = User.objects.create(username=username)
             user.set_password(nip)
             user.save()
-            print(r, r.split(','))
             data = r.split(',')
             Profile.objects.create(
                 user=user,

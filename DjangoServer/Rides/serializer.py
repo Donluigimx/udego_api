@@ -100,6 +100,10 @@ class RouteSerializer(serializers.ModelSerializer):
         depth = 1
         read_only = ('car', 'chat_room', 'people_in_route')
 
+    def validate(self, attrs):
+        if attrs['car_id'].owner != self.context['user'].profile:
+            raise serializers.ValidationError({'error': 'You do not own this car.'})
+
     def create(self, validated_data):
         route = Route.objects.create(
             car=validated_data['car_id'],
