@@ -5,69 +5,6 @@ from Rides.models import Route, Marker, Car, Profile
 from Rides.utils import udeg_valida, from_b64
 
 
-class RouteSerializer(serializers.ModelSerializer):
-
-    class MarkerSerializer(serializers.ModelSerializer):
-
-        class Meta:
-            model = Marker
-            exclude = ('route', 'id')
-            extra_kwargs = {
-                'order': {
-                    'read_only': True,
-                }
-            }
-
-    markers = MarkerSerializer(required=True, many=True)
-    car_id = serializers.SlugRelatedField(
-        queryset=Car.objects.all(),
-        slug_field='id',
-        write_only=True,
-        required=True,
-    )
-
-    people_in_route = ProfileSerializer(many=True)
-
-    class Meta:
-        model = Route
-        fields = '__all__'
-        depth = 1
-        read_only = ('car', 'chat_room')
-
-    def create(self, validated_data):
-        route = Route.objects.create(
-            car=validated_data['car_id'],
-            destination=validated_data['destination']
-        )
-        for marker in validated_data['markers']:
-            Marker.objects.create(
-                route=route,
-                lat=marker['lat'],
-                lng=marker['lng'],
-            )
-        return route
-
-
-class CarSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Car
-        fields = '__all__'
-        read_only_fields = ('owner',)
-
-    def create(self, validated_data):
-        if not 'owner' in self.context:
-            raise serializers.ValidationError({'error': 'Profile user is mandatory'})
-        validated_data['owner'] = self.context['owner']
-        return Car.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.model = validated_data['model']
-        instance.color = validated_data['color']
-        instance.license_plate = validated_data['license_plate']
-        return instance
-
-
 class ProfileSerializer(serializers.ModelSerializer):
 
     nip = serializers.CharField(write_only=True, required=False)
@@ -131,4 +68,67 @@ class ProfileSerializer(serializers.ModelSerializer):
             content, name = from_b64(validated_data['photo_data'])
             instance.photo.save(name=name, content=content)
 
+        return instance
+
+
+class RouteSerializer(serializers.ModelSerializer):
+
+    class MarkerSerializer(serializers.ModelSerializer):
+
+        class Meta:
+            model = Marker
+            exclude = ('route', 'id')
+            extra_kwargs = {
+                'order': {
+                    'read_only': True,
+                }
+            }
+
+    markers = MarkerSerializer(required=True, many=True)
+    car_id = serializers.SlugRelatedField(
+        queryset=Car.objects.all(),
+        slug_field='id',
+        write_only=True,
+        required=True,
+    )
+
+    people_in_route = ProfileSerializer(many=True)
+
+    class Meta:
+        model = Route
+        fields = '__all__'
+        depth = 1
+        read_only = ('car', 'chat_room')
+
+    def create(self, validated_data):
+        route = Route.objects.create(
+            car=validated_data['car_id'],
+            destination=validated_data['destination']
+        )
+        for marker in validated_data['markers']:
+            Marker.objects.create(
+                route=route,
+                lat=marker['lat'],
+                lng=marker['lng'],
+            )
+        return route
+
+
+class CarSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Car
+        fields = '__all__'
+        read_only_fields = ('owner',)
+
+    def create(self, validated_data):
+        if not 'owner' in self.context:
+            raise serializers.ValidationError({'error': 'Profile user is mandatory'})
+        validated_data['owner'] = self.context['owner']
+        return Car.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.model = validated_data['model']
+        instance.color = validated_data['color']
+        instance.license_plate = validated_data['license_plate']
         return instance
