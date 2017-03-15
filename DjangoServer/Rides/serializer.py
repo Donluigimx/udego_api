@@ -26,6 +26,8 @@ class RouteSerializer(serializers.ModelSerializer):
         required=True,
     )
 
+    people_in_route = ProfileSerializer(many=True)
+
     class Meta:
         model = Route
         fields = '__all__'
