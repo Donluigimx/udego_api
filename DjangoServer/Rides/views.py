@@ -29,6 +29,14 @@ class RouteViewSet(viewsets.ViewSet):
             RouteSerializer(instance=Route.objects.filter(car__owner=request.user.profile), many=True).data
         )
 
+    def retrieve(self, request, pk=None):
+        try:
+            return Response(
+                RouteSerializer(instance=Route.objects.get(car__owner=request.user.profile, id=pk)).data
+            )
+        except Route.DoesNotExist:
+            return Response({'error': 'Route does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
     def create(self, request):
         route_serializer = RouteSerializer(data=request.data)
         if route_serializer.is_valid(raise_exception=settings.DEBUG):
