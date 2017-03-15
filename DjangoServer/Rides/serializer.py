@@ -98,7 +98,7 @@ class RouteSerializer(serializers.ModelSerializer):
         model = Route
         fields = '__all__'
         depth = 1
-        read_only = ('car', 'chat_room')
+        read_only = ('car', 'chat_room', 'people_in_route')
 
     def create(self, validated_data):
         route = Route.objects.create(
