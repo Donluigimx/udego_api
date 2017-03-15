@@ -92,7 +92,7 @@ class RouteSerializer(serializers.ModelSerializer):
         required=True,
     )
 
-    people_in_route = ProfileSerializer(many=True)
+    people_in_route = ProfileSerializer(many=True, read_only=True)
 
     class Meta:
         model = Route
