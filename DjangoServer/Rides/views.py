@@ -115,6 +115,15 @@ class RouteViewSet(viewsets.ViewSet):
         except Route.DoesNotExist:
             return Response({'error': 'Route does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
+    @list_route(['GET'])
+    def has_active(self, request):
+        try:
+            return Response(
+                RouteSerializer(Route.objects.get(is_active=True, car__owner=request.user.profile)).data
+            )
+        except Route.DoesNotExist:
+            return Response({'error': 'User does not have an active route'}, status=status.HTTP_404_NOT_FOUND)
+
 
 class CarViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
