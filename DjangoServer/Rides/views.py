@@ -155,6 +155,10 @@ class CarViewSet(viewsets.ViewSet):
         except Car.DoesNotExist:
             return Response({'error': 'Car does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
+    def list(self, request):
+        return Response(
+            CarSerializer(Car.objects.filter(owner=request.user.profile), many=True).data
+        )
 
 @api_view(['POST'])
 @parser_classes((JSONParser,))
