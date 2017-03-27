@@ -1,8 +1,19 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from Rides.models import Route, Marker, Car, Profile
+from Rides.models import Route, Marker, Car, Profile, UserInRoute
 from Rides.utils import udeg_valida, from_b64
+
+
+class MarkerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Marker
+        exclude = ('route',)
+        extra_kwargs = {
+            'id': {
+                'read_only': True,
+            }
+        }
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -71,18 +82,21 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
+class UserInRouteSerializer(serializers.ModelSerializer):
+    marker = MarkerSerializer(read_only=True)
+    profile = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = UserInRoute
+        fields = '__all__'
+        extra_kwargs = {
+            'route': {
+                'write_only': True,
+            },
+        }
+
+
 class RouteSerializer(serializers.ModelSerializer):
-
-    class MarkerSerializer(serializers.ModelSerializer):
-
-        class Meta:
-            model = Marker
-            exclude = ('route',)
-            extra_kwargs = {
-                'id': {
-                    'read_only': True,
-                }
-            }
 
     markers = MarkerSerializer(required=True, many=True)
     car_id = serializers.SlugRelatedField(
@@ -92,7 +106,7 @@ class RouteSerializer(serializers.ModelSerializer):
         required=True,
     )
 
-    people_in_route = ProfileSerializer(many=True, read_only=True)
+    people_in_route = UserInRouteSerializer(many=True, read_only=True)
 
     class Meta:
         model = Route
