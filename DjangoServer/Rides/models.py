@@ -26,7 +26,6 @@ class Route(models.Model):
     is_active = models.BooleanField(default=False)
     seats = models.IntegerField(default=4)
     chat_room = models.CharField(null=True, max_length=64)
-    people_in_route = models.ManyToManyField(Profile)
 
     @property
     def available_seats(self):
@@ -37,3 +36,10 @@ class Marker(models.Model):
     route = models.ForeignKey(Route, related_name='markers')
     lat = models.DecimalField(max_digits=9, decimal_places=6)
     lng = models.DecimalField(max_digits=9, decimal_places=6)
+    description = models.CharField(max_length=64)
+
+
+class UserInRoute(models.Model):
+    route = models.ForeignKey(Route, related_name='people_in_route')
+    profile = models.ForeignKey(Profile)
+    marker = models.ForeignKey(Marker)

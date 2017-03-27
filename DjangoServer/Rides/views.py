@@ -3,6 +3,7 @@ import uuid
 from braces.views import CsrfExemptMixin
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from oauth2_provider.settings import oauth2_settings
 from oauth2_provider.views.mixins import OAuthLibMixin
@@ -15,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from Rides.models import Route, Profile, Car
+from Rides.models import Route, Profile, Car, Marker, UserInRoute
 from Rides.serializer import RouteSerializer, CarSerializer, ProfileSerializer
 from Rides.utils import udeg_valida
 
@@ -102,9 +103,13 @@ class RouteViewSet(viewsets.ViewSet):
     @detail_route(['GET'])
     def join(self, request, pk=None):
         try:
+            marker_pk = request.GET.get('marker_id', None)
+            print(pk)
+            print(marker_pk)
             route = Route.objects.get(pk=pk, is_active=True, car__owner__type=request.user.profile.type)
-            if route.available_seats != 0:
-                route.people_in_route.add(request.user.profile)
+            if route.available_seats != 0 and marker_pk is not None:
+                marker = route.markers.get(pk=marker_pk)
+                route.people_in_route.create(profile=request.user.profile, marker=marker)
                 return Response({
                     'ok': 'Route assignation successfully.',
                     'profile': ProfileSerializer(instance=route.car.owner).data,
@@ -114,6 +119,20 @@ class RouteViewSet(viewsets.ViewSet):
             return Response({'error': 'Route is full.'}, status=status.HTTP_409_CONFLICT)
         except Route.DoesNotExist:
             return Response({'error': 'Route does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+        except Marker.DoesNotExist:
+            return Response({'error': 'Marker id does not exist in this route.'}, status=status.HTTP_404_NOT_FOUND)
+
+    @detail_route(['GET'])
+    def unjoin(self, request, pk=None):
+        try:
+            route = Route.objects.get(pk=pk, is_active=True, car__owner__type=request.user.profile.type)
+            user_in_route = route.people_in_route.get(profile=request.user.profile)
+            user_in_route.delete()
+            return Response({'ok': 'Removed from route successfully'})
+        except Route.DoesNotExist:
+            return Response({'error': 'Route does not exists'}, status=status.HTTP_404_NOT_FOUND)
+        except UserInRoute.DoesNotExist:
+            return Response({'error': 'You are not joined in the route.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @list_route(['GET'])
     def has_active(self, request):

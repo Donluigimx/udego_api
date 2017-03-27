@@ -44,15 +44,18 @@ class UserTestCase(APITestCase):
             'markers': [
                 {
                     'lat': 100.000001,
-                    'lng': 100.000002
+                    'lng': 100.000002,
+                    'description': 'CUCEI',
                 },
                 {
                     'lat': 100.000003,
-                    'lng': 100.000004
+                    'lng': 100.000004,
+                    'description': 'CUCEI',
                 },
                 {
                     'lat': 100.000005,
-                    'lng': 100.000006
+                    'lng': 100.000006,
+                    'description': 'CUCEI',
                 }
             ]
         }
@@ -94,15 +97,23 @@ class UserTestCase(APITestCase):
                                          user=user
                                          )
 
-        self.client.get('/api/routes/{0}/active/'.format(route.id), HTTP_AUTHORIZATION=auth)
+        response = self.client.get('/api/routes/{0}/activate/'.format(route.id), HTTP_AUTHORIZATION=auth)
         self.access_token.user = user
         self.access_token.save()
 
-        response = self.client.get('/api/routes/{0}/join/'.format(route.id), HTTP_AUTHORIZATION=auth)
+        marker_id = route.markers.first().id
+        response = self.client.get(
+            '/api/routes/{route}/join/?marker_id={marker}'.format(route=route.id, marker=marker_id),
+                                   HTTP_AUTHORIZATION=auth)
 
+        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(3, route.available_seats)
-        self.assertEqual(route.people_in_route.first(), profile)
+        self.assertEqual(route.people_in_route.first().profile, profile)
+
+        response = self.client.get('/api/routes/{0}/unjoin/'.format(route.id), HTTP_AUTHORIZATION=auth)
+
+        self.assertEqual(4, route.available_seats)
 
     def test_car(self):
         data = {

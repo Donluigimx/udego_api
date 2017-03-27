@@ -77,9 +77,9 @@ class RouteSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Marker
-            exclude = ('route', 'id')
+            exclude = ('route',)
             extra_kwargs = {
-                'order': {
+                'id': {
                     'read_only': True,
                 }
             }
@@ -116,6 +116,7 @@ class RouteSerializer(serializers.ModelSerializer):
                 route=route,
                 lat=marker['lat'],
                 lng=marker['lng'],
+                description=marker['description'],
             )
         return route
 
