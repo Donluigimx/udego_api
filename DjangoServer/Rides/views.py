@@ -103,10 +103,21 @@ class RouteViewSet(viewsets.ViewSet):
     @detail_route(['GET'])
     def join(self, request, pk=None):
         try:
+            UserInRoute.objects.get(profile=request.user.profile)
+            return Response({'error': 'You are already in a route'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        except UserInRoute.DoesNotExist:
+            pass
+        try:
+            Route.objects.get(car__owner=request.user.profile, is_active=True)
+            return Response({'error': 'You can not join to a route when you are in a active route already.'},
+                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        except Route.DoesNotExist:
+            pass
+        try:
             marker_pk = request.GET.get('marker_id', None)
-            print(pk)
-            print(marker_pk)
             route = Route.objects.get(pk=pk, is_active=True, car__owner__type=request.user.profile.type)
+            if route.car.owner == request.user.profile:
+                return Response({'error': 'You can not join to your route.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
             if route.available_seats != 0 and marker_pk is not None:
                 marker = route.markers.get(pk=marker_pk)
                 route.people_in_route.create(profile=request.user.profile, marker=marker)
@@ -141,6 +152,15 @@ class RouteViewSet(viewsets.ViewSet):
                 RouteSerializer(Route.objects.get(is_active=True, car__owner=request.user.profile)).data
             )
         except Route.DoesNotExist:
+            return Response({'error': 'User does not have an active route'}, status=status.HTTP_404_NOT_FOUND)
+
+    @list_route(['GET'])
+    def in_route(self, request):
+        try:
+            return Response(
+                RouteSerializer(instance=UserInRoute.objects.get(profile=request.user.profile).route).data
+            )
+        except UserInRoute.DoesNotExist:
             return Response({'error': 'User does not have an active route'}, status=status.HTTP_404_NOT_FOUND)
 
 
