@@ -7,7 +7,7 @@ module.exports = function (io) {
     });
   /* GET home page. */
     router.get('/:id([a-zA-Z0-9_.-]{36})', function(req, res, next) {
-        console.log('Connected');
+        console.log('Server');
         res.send('Chat Server.');
         io.sockets.on('connection', function(socket) {
             console.log('A user connected');
@@ -16,6 +16,12 @@ module.exports = function (io) {
                 console.log(room);
                 socket.join(room);
                 io.sockets.in(room).emit('message', 'Joined');
+                setTimeout(function(){
+                    io.sockets.in(room).emit('message', 'Puto');
+                }, 4000);
+                setTimeout(function(){
+                    io.sockets.in(room).emit('message', 'Joto');
+                }, 4000);
             });
             //Send a message after a timeout of 4seconds
             setTimeout(function(){
