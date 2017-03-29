@@ -55,6 +55,7 @@ class UserInRoute(models.Model):
     route = models.ForeignKey(Route, related_name='people_in_route')
     profile = models.ForeignKey(Profile)
     marker = models.ForeignKey(Marker)
+    ready = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s %s %s" % (self.route, self.profile, self.marker)

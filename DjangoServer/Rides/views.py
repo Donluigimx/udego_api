@@ -3,7 +3,7 @@ import uuid
 from braces.views import CsrfExemptMixin
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import HttpResponse
 from oauth2_provider.settings import oauth2_settings
 from oauth2_provider.views.mixins import OAuthLibMixin
@@ -50,7 +50,7 @@ class RouteViewSet(viewsets.ViewSet):
             route = Route.objects.get(pk=pk, car__owner=request.user.profile)
             if not route.is_active:
                 route.delete()
-                return Response({'ok', 'Route deleted successfully.'}, status=status.HTTP_200_OK)
+                return Response({'ok': 'Route deleted successfully.'}, status=status.HTTP_200_OK)
             return Response({'error': 'Route cannot be deleted when is active.'}, status=status.HTTP_409_CONFLICT)
         except Route.DoesNotExist:
             return Response({'error': 'Route does not exist.'}, status=status.HTTP_404_NOT_FOUND)
@@ -162,6 +162,20 @@ class RouteViewSet(viewsets.ViewSet):
             )
         except UserInRoute.DoesNotExist:
             return Response({'error': 'User does not have an active route'}, status=status.HTTP_404_NOT_FOUND)
+        except MultipleObjectsReturned:
+            return Response({'info': 'You were in a multiple routes and have been removed from all'})
+
+    @list_route(['GET'])
+    def ready(self, request):
+        try:
+            user_in_route = UserInRoute.objects.get(profile=request.user.profile)
+            user_in_route.ready = True
+            user_in_route.save()
+            return Response({'ok': 'User ready'})
+        except UserInRoute.DoesNotExist:
+            return Response({'error': 'User does not have an active route'}, status=status.HTTP_404_NOT_FOUND)
+        except MultipleObjectsReturned:
+            return Response({'info': 'You were in a multiple routes and have been removed from all'})
 
 
 class CarViewSet(viewsets.ViewSet):
@@ -198,6 +212,7 @@ class CarViewSet(viewsets.ViewSet):
         return Response(
             CarSerializer(Car.objects.filter(owner=request.user.profile), many=True).data
         )
+
 
 @api_view(['POST'])
 @parser_classes((JSONParser,))
