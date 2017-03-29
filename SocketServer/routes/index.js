@@ -21,7 +21,7 @@ module.exports = function (io) {
                 }, 4000);
                 setTimeout(function(){
                     io.sockets.in(room).emit('message', 'Joto');
-                }, 4000);
+                }, 8000);
             });
             //Send a message after a timeout of 4seconds
             setTimeout(function(){
