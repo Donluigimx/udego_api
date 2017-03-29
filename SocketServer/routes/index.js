@@ -7,6 +7,7 @@ module.exports = function (io) {
     });
   /* GET home page. */
     router.get('/:id([a-zA-Z0-9_.-]{36})', function(req, res, next) {
+        console.log('Connected');
         res.send('Chat Server.');
         io.sockets.on('connection', function(socket) {
             console.log('A user connected');
