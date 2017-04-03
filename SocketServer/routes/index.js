@@ -30,6 +30,10 @@ module.exports = function (io) {
             socket.on('disconnect', function () {
                 console.log('A user disconnected');
             });
+
+            socket.on('message', function (message) {
+                console.log(message);
+            })
         });
     });
     return router
