@@ -33,7 +33,7 @@ module.exports = function (io) {
 
             socket.on('message', function (message) {
                 console.log(message);
-            })
+            });
         });
     });
     return router
