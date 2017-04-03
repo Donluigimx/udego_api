@@ -106,7 +106,6 @@ class UserTestCase(APITestCase):
             '/api/routes/{route}/join/?marker_id={marker}'.format(route=route.id, marker=marker_id),
                                    HTTP_AUTHORIZATION=auth)
 
-        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(3, route.available_seats)
         self.assertEqual(route.people_in_route.first().profile, profile)

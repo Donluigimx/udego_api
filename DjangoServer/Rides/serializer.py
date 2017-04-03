@@ -105,6 +105,7 @@ class RouteSerializer(serializers.ModelSerializer):
         write_only=True,
         required=True,
     )
+    profile = ProfileSerializer(source='car.owner', read_only=True)
 
     people_in_route = UserInRouteSerializer(many=True, read_only=True)
 
