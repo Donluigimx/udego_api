@@ -23,12 +23,13 @@ module.exports = function (io) {
                     io.sockets.in(room).emit('message', '{"lat": 100.000000, "lng": 100.000001}');
                 }, 8000);
             });
-            //Send a message after a timeout of 4seconds
-            setTimeout(function(){
-                io.sockets.in('0saA_1.-_asdw-ojisdk').send('Si jala');
-            }, 4000);
+
             socket.on('disconnect', function () {
                 console.log('A user disconnected');
+            });
+
+            socket.on('message', function (msg) {
+                io.sockets.in(io.sockets.rooms[socket.id]).emit('message', msg);
             });
         });
     });
