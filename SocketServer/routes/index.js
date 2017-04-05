@@ -31,6 +31,7 @@ module.exports = function (io) {
 
             socket.on('message', function (id, msg) {
                 console.log(msg);
+                console.log(id);
                 io.sockets.in(id).emit('message', msg);
             });
         });
