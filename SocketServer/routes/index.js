@@ -16,6 +16,7 @@ module.exports = function (io) {
             socket.on('room', function (room) {
                 console.log(room);
                 socket.join(room);
+                socket._rom = room;
                 io.sockets.in(room).emit('message', 'Joined');
                 setTimeout(function(){
                     io.sockets.in(room).emit('message', 'Puto');
@@ -29,10 +30,10 @@ module.exports = function (io) {
                 console.log('A user disconnected');
             });
 
-            socket.on('message', function (id, msg) {
+            socket.on('message', function (msg) {
                 console.log(msg);
-                console.log(id);
-                io.sockets.in(id).emit('message', msg);
+                console.log(socket._rom);
+                io.sockets.in(socket._rom).emit('message', msg);
             });
         });
     });
