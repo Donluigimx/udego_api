@@ -10,6 +10,7 @@ module.exports = function (io) {
         console.log('Server');
         res.send('Chat Server.');
         io.sockets.on('connection', function(socket) {
+
             console.log('A user connected');
 
             socket.on('room', function (room) {
@@ -28,9 +29,9 @@ module.exports = function (io) {
                 console.log('A user disconnected');
             });
 
-            socket.on('message', function (msg) {
+            socket.on('message', function (id, msg) {
                 console.log(msg);
-                io.sockets.in(io.sockets.rooms[socket.id]).emit('message', msg);
+                io.sockets.in(id).emit('message', msg);
             });
         });
     });
