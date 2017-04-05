@@ -29,6 +29,7 @@ module.exports = function (io) {
             });
 
             socket.on('message', function (msg) {
+                console.log(msg);
                 io.sockets.in(io.sockets.rooms[socket.id]).emit('message', msg);
             });
         });
