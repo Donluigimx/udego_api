@@ -7,9 +7,9 @@ class Profile(models.Model):
     name = models.CharField(max_length=64)
     phone_number = models.CharField(max_length=16, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
-    code = models.CharField(max_length=10, unique=True)
+    code = models.CharField(max_length=64, unique=True)
     type = models.CharField(max_length=1)
-    university = models.CharField(max_length=10)
+    university = models.CharField(max_length=64)
     photo = models.ImageField(upload_to='images/customer/', null=True, blank=True)
 
     def __str__(self):
