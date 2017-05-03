@@ -122,11 +122,9 @@ class RouteSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        route = Route.objects.create(
-            car=validated_data['car_id'],
-            destination=validated_data['destination']
-        )
-        for marker in validated_data['markers']:
+        markers = validated_data.pop('markers', None)
+        route = Route.objects.create(**validated_data)
+        for marker in markers:
             Marker.objects.create(
                 route=route,
                 lat=marker['lat'],
