@@ -10,7 +10,7 @@ class Profile(models.Model):
     code = models.CharField(max_length=64, unique=True)
     type = models.CharField(max_length=1)
     university = models.CharField(max_length=64)
-    photo = models.ImageField(upload_to='images/customer/', null=True, blank=True)
+    photo = models.ImageField(upload_to='images/profile/', null=True, blank=True)
 
     def __str__(self):
         return self.name
