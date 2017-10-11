@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from Rides.models import Route, Marker, Car, Profile, UserInRoute
+from Rides.models import Route, Marker, Car, Profile, UserInRoute, Rate
 from Rides.utils import udeg_valida, from_b64
 
 
@@ -142,14 +142,16 @@ class CarSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('owner',)
 
+
+class RateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Rate
+        fields = '__all__'
+        read_only_fields = ('from_profile', 'to_profile', 'travel')
+
     def create(self, validated_data):
-        if not 'owner' in self.context:
-            raise serializers.ValidationError({'error': 'Profile user is mandatory'})
-        validated_data['owner'] = self.context['owner']
-        return Car.objects.create(**validated_data)
+        pass
 
     def update(self, instance, validated_data):
-        instance.model = validated_data['model']
-        instance.color = validated_data['color']
-        instance.license_plate = validated_data['license_plate']
-        return instance
+        pass

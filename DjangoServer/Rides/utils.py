@@ -51,3 +51,14 @@ def from_b64(b64_data=''):
     print(extension)
     extension = "jpg" if extension == "jpeg" else extension
     return ContentFile(data), "{0}.{1}".format(name, extension)
+
+
+def calculate_rate(profile):
+
+    profile.refresh_from_db()
+    total_rate = 0
+    for rate in profile.rated.all():
+        total_rate += rate.rate
+    profile.rate = total_rate / profile.rated.count()
+    profile.save()
+    return

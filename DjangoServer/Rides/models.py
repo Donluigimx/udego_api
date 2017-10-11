@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.postgres import validators
 from django.db import models
 
 
@@ -11,6 +12,10 @@ class Profile(models.Model):
     type = models.CharField(max_length=1)
     university = models.CharField(max_length=64)
     photo = models.ImageField(upload_to='images/profile/', null=True, blank=True)
+    rate = models.FloatField(
+        default=5,
+        validators=[validators.MinValueValidator(0), validators.MaxValueValidator(5)]
+    )
 
     def __str__(self):
         return self.name
@@ -27,7 +32,7 @@ class Car(models.Model):
 
 
 class Route(models.Model):
-    car = models.ForeignKey(Car, related_name='routes')
+    car = models.ForeignKey(Car, related_name='routes', null=True)
     destination = models.CharField(max_length=32)
     is_active = models.BooleanField(default=False)
     seats = models.IntegerField(default=4)
@@ -59,3 +64,29 @@ class UserInRoute(models.Model):
 
     def __str__(self):
         return "%s %s %s" % (self.route, self.profile, self.marker)
+
+
+class Travel(models.Model):
+
+    route = models.ForeignKey('Rides.Route')
+    profile = models.ForeignKey('Rides.Profile')
+    began = models.DateTimeField(auto_now_add=True)
+    ended = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return "%s %s began:%s, ended:%s" % \
+               (self.profile, self.route, self.began.isoformat(), self.ended.isoformat())
+
+
+class Rate(models.Model):
+
+    travel = models.ForeignKey('Rides.Travel')
+    from_profile = models.ForeignKey('Rides.Profile', related_name='rates')
+    to_profile = models.ForeignKey('Rides.Profile', related_name='rated')
+    rate = models.IntegerField(
+        validators=[validators.MinValueValidator(0), validators.MaxValueValidator(5)]
+    )
+
+    def __str__(self):
+        return "%s rate %s with %d" % \
+               (self.from_profile, self.to_profile, self.rate)
